@@ -11,7 +11,7 @@ object ShopListRepositoryImpl : ShopListRepository {
         после стоит перенисти в бд */
 
     private val shopListLD = MutableLiveData<List<ShopItem>>()
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
     private var autoIncrementId = 0;
 
     init {
