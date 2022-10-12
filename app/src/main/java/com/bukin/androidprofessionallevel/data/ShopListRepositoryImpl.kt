@@ -1,5 +1,7 @@
 package com.bukin.androidprofessionallevel.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.bukin.androidprofessionallevel.domain.ShopItem
 import com.bukin.androidprofessionallevel.domain.repository.ShopListRepository
 import java.lang.RuntimeException
@@ -8,18 +10,28 @@ object ShopListRepositoryImpl : ShopListRepository {
     /* TODO: Для экономии времени было решено хранить данные в переменных
         после стоит перенисти в бд */
 
+    private val shopListLD = MutableLiveData<List<ShopItem>>()
     private val shopList = mutableListOf<ShopItem>()
     private var autoIncrementId = 0;
+
+    init {
+        for (i in 0 until 10) {
+            val item = ShopItem("Name $i", i, true)
+            addShopItem(item)
+        }
+    }
 
     override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == ShopItem.UNDEFINED_ID) {
             shopItem.id = autoIncrementId++
         }
         shopList.add(shopItem)
+        updateList()
     }
 
     override fun deleteShopItem(shopItem: ShopItem) {
         shopList.remove(shopItem)
+        updateList()
     }
 
     override fun editShopItem(shopItem: ShopItem) {
@@ -35,7 +47,11 @@ object ShopListRepositoryImpl : ShopListRepository {
     }
 
     // Лучше возвращать копию коллекции, чтобы нельзя быбло изменить колл из других мест программы
-    override fun getShopList(): List<ShopItem> {
-        return shopList.toList()
+    override fun getShopList(): LiveData<List<ShopItem>> {
+        return shopListLD
+    }
+
+    private fun updateList() {
+        shopListLD.value = shopList.toList()
     }
 }
