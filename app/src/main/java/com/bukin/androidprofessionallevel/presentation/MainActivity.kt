@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             /*
             * Чтобы элементы не уходили в конец списка, можно их заранее отсортировать,
             * заменив список на TreeSet<ShopItem> в ShopListRepositoryImpl
-            *  */
+            * */
 
             // Добавляем ко View
             llShopList.addView(view)
