@@ -56,7 +56,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
                     android.R.color.holo_red_light
                 )
             )
-            // Solution
+            // Solution1
 //        } else {
 //            holder.tvName.text = ""
 //            holder.tvCount.text = ""
@@ -69,11 +69,20 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         }
     }
 
+
+    // Solution2
+    // Вызывается, когда ViewHolder хотят переиспользовать
+    // (например при появлении новых элементов при скроелле)
+    override fun onViewRecycled(holder: ShopItemViewHolder) {
+        super.onViewRecycled(holder)
+    }
+
     // Возвращает тип view по его позиции (viewType)
     // viewType использвутся, когда в RV помещены разные макеты (itemShop enabled/disabled)
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
+    // Плохое решение, т.к. позиция будет передаваться каждый раз при появлении элемента (медленно)
+//    override fun getItemViewType(position: Int): Int {
+//        return position
+//    }
 
     override fun getItemCount(): Int =
         shopList.size
