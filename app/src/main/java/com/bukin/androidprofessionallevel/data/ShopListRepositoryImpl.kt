@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.bukin.androidprofessionallevel.domain.ShopItem
 import com.bukin.androidprofessionallevel.domain.repository.ShopListRepository
 import java.lang.RuntimeException
+import kotlin.random.Random
 
 object ShopListRepositoryImpl : ShopListRepository {
     /* TODO: Для экономии времени было решено хранить данные в переменных
@@ -15,8 +16,8 @@ object ShopListRepositoryImpl : ShopListRepository {
     private var autoIncrementId = 0;
 
     init {
-        for (i in 0 until 10) {
-            val item = ShopItem("Name $i", i, true)
+        for (i in 0 until 100) {
+            val item = ShopItem("Name $i", i, Random.nextBoolean())
             addShopItem(item)
         }
     }
