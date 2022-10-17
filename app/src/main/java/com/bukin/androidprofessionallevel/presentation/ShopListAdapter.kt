@@ -31,9 +31,8 @@ class ShopListAdapter: RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>(
         }
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount(): Int =
+        list.size
 
 
     class ShopItemViewHolder(val view: View): RecyclerView.ViewHolder(view) {
