@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bukin.androidprofessionallevel.R
 import com.bukin.androidprofessionallevel.domain.ShopItem
@@ -18,6 +17,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
             field = value
             notifyDataSetChanged() // обновление данных
         }
+    var onShopItemLongCLickListener: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
     // Как создать View getItemViewType()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
@@ -44,7 +45,16 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     // Как вставить значения во View
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = shopList[position]
+        holder.view.setOnLongClickListener {
+            /*
+            * Здесь вызывается ляибда-выражение onShopItemLongCLickListener: ((ShopItem) -> Unit)?
+            * Т.к. выражение может содеражть null, то используется метод invoke()
+            * */
+            onShopItemLongCLickListener?.invoke(shopItem)
+            true
+        }
         holder.view.setOnClickListener {
+            onShopItemClickListener?.invoke(shopItem)
             true
         }
         holder.tvName.text = shopItem.name
