@@ -66,8 +66,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
 
     class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val tvName = view.findViewById<TextView>(R.id.tv_name)
-        val tvCount = view.findViewById<TextView>(R.id.tv_count)
+        val tvName: TextView = view.findViewById(R.id.tv_name)
+        val tvCount: TextView = view.findViewById(R.id.tv_count)
     }
 
 
