@@ -1,5 +1,6 @@
 package com.bukin.androidprofessionallevel.presentation
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.bukin.androidprofessionallevel.domain.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
 
+    var count = 0
     var shopList = listOf<ShopItem>()
         set(value) {
             field = value
@@ -19,6 +21,9 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     // Как создать View
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
+
+        Log.d("Adapter", "onCreadteViewHolder, count ${++count}")
+
         // Создаем необходимое количество элементов на экране +
         // несколько сверху и снизу
         val view = LayoutInflater.from(parent.context)
@@ -73,9 +78,9 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     // Solution2
     // Вызывается, когда ViewHolder хотят переиспользовать
     // (например при появлении новых элементов при скроелле)
-    override fun onViewRecycled(holder: ShopItemViewHolder) {
-        super.onViewRecycled(holder)
-    }
+//    override fun onViewRecycled(holder: ShopItemViewHolder) {
+//        super.onViewRecycled(holder)
+//    }
 
     // Возвращает тип view по его позиции (viewType)
     // viewType использвутся, когда в RV помещены разные макеты (itemShop enabled/disabled)
