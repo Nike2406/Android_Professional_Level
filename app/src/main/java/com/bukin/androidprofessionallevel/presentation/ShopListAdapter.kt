@@ -1,41 +1,21 @@
 package com.bukin.androidprofessionallevel.presentation
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import com.bukin.androidprofessionallevel.R
 import com.bukin.androidprofessionallevel.domain.ShopItem
 
-class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+/*
+ListAdapter принимает два параметра:
+    1 - Тип элемента, который отображает RV
+    2 - Тип ViewHolder
+в его конструктор нужно передать callback (ShopListDiffCallback())
 
-    var count = 0
-    var shopList = listOf<ShopItem>()
-        set(value) {
-            // Исправляем через DiffUtils
-            // Проверяем, изменились ли элементы
-            val callback = ShopListDiffCallback(shopList, value)
-            // Производим вычисления, какие элементы изменились для адапетера
-            // принимает callback
-            // ! Работает в главном потоке, т.е. главный поток ждет пока закончится оп-ция
-            val diffResult = DiffUtil.calculateDiff(callback)
-            // Чтобы адаптер применил изменения, выполняем diffResult.dispatchUpdatesTo(adapter),
-            // который уже вызовет необходимые методы (
-            // notifyItemChanged(int), notifyItemInserted(int),
-            // notifyItemRemoved(int), notifyItemRangeChanged(int, int),
-            // notifyItemRangeInserted(int, int), notifyItemRangeRemoved(int, int))
-            diffResult.dispatchUpdatesTo(this)
-            // В конце присваиваем новое занчение через сеттер
-            field = value
-            /*
-            * notifyDataSetChanged() - не поределяет, что именно изменилось в списке и
-            * перерисовывает все
-            notifyDataSetChanged() // обновление данных
-            * */
-        }
+Скрывает всю логику работы со списком
+* */
+class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
+
     var onShopItemLongCLickListener: ((ShopItem) -> Unit)? = null
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
@@ -61,14 +41,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     // Как вставить значения во View
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
-        /*
-        Проблема: Адаптер привязывает все элменты при изменении состояния
-        (notifyDataSetChanged() )
-        Решение: Передавать список в адаптер для сравнения через DiffUtils,
-        который будет определять изменения
-        */
-        Log.d("ADAPTER_ON_BIND", "onBindViewHolder created, count: ${++count}")
-        val shopItem = shopList[position]
+        // Для получения элемента из списка используется служебный метод getItem()
+        val shopItem = getItem(position)
         holder.view.setOnLongClickListener {
             onShopItemLongCLickListener?.invoke(shopItem)
             true
@@ -82,22 +56,13 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun getItemViewType(position: Int): Int {
-        val shopItem = shopList[position]
+        val shopItem = getItem(position)
 
         return if (shopItem.enabled) {
             VIEW_TYPE_ENABLED
         } else {
             VIEW_TYPE_DISABLED
         }
-    }
-
-    override fun getItemCount(): Int =
-        shopList.size
-
-
-    class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val tvName: TextView = view.findViewById(R.id.tv_name)
-        val tvCount: TextView = view.findViewById(R.id.tv_count)
     }
 
 

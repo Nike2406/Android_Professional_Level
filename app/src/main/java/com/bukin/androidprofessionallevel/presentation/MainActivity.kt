@@ -21,8 +21,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         // подписываемся на LiveData
         viewModel.shopList.observe(this) {
-            // Вставляем новый список в RV
-            shopListAdapter.shopList = it
+            // Вставляем новый список в RV через ListAdapter.submitList(list)
+            shopListAdapter.submitList(it)
         }
     }
 
@@ -68,7 +68,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = shopListAdapter.shopList[viewHolder.adapterPosition]
+                /*
+                * Если нужно получить список элементов,
+                * то можно вызвать ListAdapter.currentList(position)
+                * */
+                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteShopItem(item)
             }
         }
