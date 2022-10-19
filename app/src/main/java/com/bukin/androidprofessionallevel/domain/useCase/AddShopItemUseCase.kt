@@ -5,7 +5,7 @@ import com.bukin.androidprofessionallevel.domain.repository.ShopListRepository
 
 class AddShopItemUseCase(private val shopListRepository: ShopListRepository) {
 
-    fun addShopIte(shopItem: ShopItem) {
+    fun addShopItem(shopItem: ShopItem) {
         shopListRepository.addShopItem(shopItem)
     }
 }
