@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bukin.androidprofessionallevel.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +24,16 @@ class MainActivity : AppCompatActivity() {
         viewModel.shopList.observe(this) {
             // Вставляем новый список в RV через ListAdapter.submitList(list)
             shopListAdapter.submitList(it)
+        }
+
+        /*
+        * Для перехода между activity используется putExtra/getExtra
+        * с использованием интентов
+        * */
+        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+        buttonAddItem.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -86,6 +97,11 @@ class MainActivity : AppCompatActivity() {
                 "MainActivity",
                 "Item: id = ${it.id}, name = ${it.name}, count = ${it.count}, enabled = ${it.enabled}"
             )
+            /*
+            * При клике на экран будет запущен режим редактирования
+            * */
+            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
