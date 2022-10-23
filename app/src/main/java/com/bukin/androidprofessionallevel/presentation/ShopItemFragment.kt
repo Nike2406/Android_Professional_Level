@@ -112,9 +112,22 @@ class ShopItemFragment(
             }
             tilName.error = message
         }
-        // Если работа с экраном завершена, закрываем его
+        /*
+        Если работа с экраном завершена, закрываем его
+        У фргамента нет метода finish(), поэтому, в данном случае, нужно
+        вызвать метод onBackPressed() у активити, к которой прикреплен данный
+        фрагмент
+        */
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            finish() // Завершение view
+            /*
+            * onBackPressed() - эмулирует нажатие "назад"
+            * (в нашем случае "выход из фрагмента")
+            *
+            * Вызов activity можно произвести через getActivity() (activity) или requireActivity()
+            * getActivity() - nullable
+            * requireActivity() - not nullable
+            * */
+            activity?.onBackPressed()
         }
     }
 
