@@ -1,6 +1,6 @@
 #### Продолжение курса по android-разработке от Андрея Сумина.
 
-Конспекты по курсу на [miro](https://miro.com/app/board/uXjVOir6HC4=/)
+Конспекты по курсу на [miro](https://miro.com/app/board/uXjVPLeW_FE=/)
 
 В этой реализации курс разделен по веткам git, где master - общий черновик.
 
