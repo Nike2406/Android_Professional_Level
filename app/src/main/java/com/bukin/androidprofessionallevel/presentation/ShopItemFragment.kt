@@ -15,12 +15,13 @@ import com.bukin.androidprofessionallevel.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 
 /*
-* Передача параметров во фрагмент
+* Передача параметров во фрагмент(так делать нельзя, см. ниже) будет работать только
+* при первом создании фрагемента (!)
+*
+* При пересоздании фрагмента (например при повороте экрна),
+* вызывается пустой конструктор фрагмента
 * */
-class ShopItemFragment(
-    private val screenMode: String = MODE_UNKNOWN,
-    private val shopItemId: Int = ShopItem.UNDEFINED_ID
-) : Fragment() {
+class ShopItemFragment() : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
 
@@ -30,8 +31,14 @@ class ShopItemFragment(
     private lateinit var etCount: EditText
     private lateinit var buttonSave: Button
 
-//    private var screenMode = MODE_UNKNOWN
-//    private var shopItemId = ShopItem.UNDEFINED_ID
+    private var screenMode = MODE_UNKNOWN
+    private var shopItemId = ShopItem.UNDEFINED_ID
+
+    // Инициализация объекта
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
+    }
 
     /*
     * При создании фрагемента, сначала он прикрепляется к activity
@@ -41,6 +48,12 @@ class ShopItemFragment(
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        /*
+        * Для правильной передачи параметров во фрагмент исп. arguments типа Bundle?
+        * requiredArguments() - not nullable
+        * Этот метод прилетает в activity.onCreate(bundle: Bundle)
+        * */
+
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
     }
 
@@ -49,7 +62,6 @@ class ShopItemFragment(
     * */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parseParams()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews(view)
         addTextChangeListeners()
@@ -166,12 +178,21 @@ class ShopItemFragment(
     * activity доп параметров. Т.е. activity не может быть запущена определенным образом
     * */
     private fun parseParams() {
-        if (screenMode != MODE_EDIT && screenMode != MODE_ADD) {
+        val args = requireArguments()
+        if (!args.containsKey(EXTRA_SCREEN_MODE)) {
             throw java.lang.RuntimeException("Param screen mode is absent")
         }
+        val mode = args.getString(EXTRA_SCREEN_MODE)
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+            throw java.lang.RuntimeException("Unknown screen mode: $mode")
+        }
+        screenMode = mode
 
-        if (screenMode == MODE_EDIT && shopItemId == ShopItem.UNDEFINED_ID) {
-            throw java.lang.RuntimeException("Param shop item id is absent")
+        if (screenMode == MODE_EDIT) {
+            if (!args.containsKey(EXTRA_SHOP_ITEM_ID)) {
+                throw java.lang.RuntimeException("Param shop item id is absent")
+            }
+            shopItemId = args.getInt(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
     }
 
@@ -197,24 +218,27 @@ class ShopItemFragment(
         private const val MODE_UNKNOWN = ""
 
         fun newInstanceAddItem(): ShopItemFragment {
-            return ShopItemFragment(MODE_ADD)
+//            val args = Bundle()
+            // Вставляем в Bundle параметры
+//            args.putString(EXTRA_SCREEN_MODE, MODE_ADD)
+//            val fragment = ShopItemFragment()
+//            fragment.arguments = args
+//            return fragment
+            // apply{} - сначала создается объект, а потом применяются к нему методы
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(EXTRA_SCREEN_MODE, MODE_ADD)
+                }
+            }
         }
 
         fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
-            return ShopItemFragment(MODE_EDIT, shopItemId)
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(EXTRA_SCREEN_MODE, MODE_EDIT)
+                    putInt(EXTRA_SHOP_ITEM_ID, shopItemId)
+                }
+            }
         }
-
-//        fun newIntentAddItem(context: Context): Intent {
-//            val intent = Intent(context, ShopItemActivity::class.java)
-//            intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
-//            return intent
-//        }
-//
-//        fun newIntentEditItem(context: Context, shopItemId: Int): Intent {
-//            val intent = Intent(context, ShopItemActivity::class.java)
-//            intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
-//            intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
-//            return intent
-//        }
     }
 }
