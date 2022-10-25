@@ -1,5 +1,6 @@
 package com.bukin.androidprofessionallevel.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +25,7 @@ import com.google.android.material.textfield.TextInputLayout
 class ShopItemFragment() : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
     private lateinit var tilName: TextInputLayout
     private lateinit var tilCount: TextInputLayout
@@ -39,12 +41,25 @@ class ShopItemFragment() : Fragment() {
         super.onCreate(savedInstanceState)
         parseParams()
     }
+    /*
+    * Метод прикрепления к activity
+    * context - то activity, к которому прикрепляемся
+    * */
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener){
+            onEditingFinishedListener = context
+        } else {
+            // Показываем, что в MainActivity нужно реализовать интерфейс
+            throw RuntimeException("Activity must implement OnEditingFinishedListener")
+        }
+    }
 
     /*
-    * При создании фрагемента, сначала он прикрепляется к activity
-    * Потом из макета создается View
-    * После создается View
-    * */
+        * При создании фрагемента, сначала он прикрепляется к activity
+        * Потом из макета создается View
+        * После создается View
+        * */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -132,14 +147,12 @@ class ShopItemFragment() : Fragment() {
         */
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
             /*
-            * onBackPressed() - эмулирует нажатие "назад"
-            * (в нашем случае "выход из фрагмента")
-            *
-            * Вызов activity можно произвести через getActivity() (activity) или requireActivity()
-            * getActivity() - nullable
-            * requireActivity() - not nullable
+            * Т.к. activity может вернуть любую activity, то делаем явный каст в MainActivity
+            * ! В данном случаое, мы можем использовать только MainActivity и фрагмент может
+            * управлять activity -_-
+            * Вместо этого следует использовать интерфейс
             * */
-            activity?.onBackPressed()
+            onEditingFinishedListener.onEditingFinished()
         }
     }
 
@@ -209,6 +222,10 @@ class ShopItemFragment() : Fragment() {
         buttonSave = view.findViewById(R.id.save_button)
     }
 
+    interface OnEditingFinishedListener {
+
+        fun onEditingFinished()
+    }
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "extra_mode"
