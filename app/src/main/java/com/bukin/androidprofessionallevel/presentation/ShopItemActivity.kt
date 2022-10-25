@@ -15,14 +15,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity() {
 
-//    private lateinit var viewModel: ShopItemViewModel
-//
-//    private lateinit var tilName: TextInputLayout
-//    private lateinit var tilCount: TextInputLayout
-//    private lateinit var etName: EditText
-//    private lateinit var etCount: EditText
-//    private lateinit var buttonSave: Button
-//
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
 
@@ -30,42 +22,12 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-//        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-//        initViews()
-//        addTextChangeListeners()
-        launchRightMode()
-//        observeViewModel()
+        // Проверка на существование фрагмента
+        if (savedInstanceState == null) {
+            launchRightMode()
+        }
     }
 
-    // Соответственно из activity:
-//    private fun launchEditMode() {
-//        // Получаем элмента по id
-//        viewModel.getShopItem(shopItemId)
-//        // Подписываемся на элемент
-//        viewModel.shopItem.observe(this) {
-//            // После загрузки элмента присваиваем значения
-//            etName.setText(it.name)
-//            etCount.setText(it.count.toString())
-//        }
-//        // При клике на кнопку обновляем информацию
-//        buttonSave.setOnClickListener {
-//            viewModel.editShopItem(
-//                etName.text?.toString(),
-//                etCount.text?.toString()
-//            )
-//        }
-//    }
-//
-//    private fun launchAddMode() {
-//        // Не вставляем значения в поля ввода
-//        buttonSave.setOnClickListener {
-//            viewModel.addShopItem(
-//                etName.text?.toString(),
-//                etCount.text?.toString()
-//            )
-//        }
-//    }
-//
     private fun launchRightMode() {
         val fragment = when (screenMode) {
             MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
@@ -80,61 +42,12 @@ class ShopItemActivity : AppCompatActivity() {
         * */
         supportFragmentManager.beginTransaction()
             // добавляем фрагмент(id контейнера, фрагмент)
-            .add(R.id.shop_item_container, fragment)
+            // используем replace вместо add, чтобы постоянно не добавлть старые фрагменты
+            .replace(R.id.shop_item_container, fragment)
             // запускаем транзакцию на выполнение с помощью .commit()
             .commit()
     }
-//
-//    private fun observeViewModel() {
-//        // Подписываемся на остальные объекты для отображения ошибок
-//        viewModel.errorInputCount.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_input_count)
-//            } else {
-//                null
-//            }
-//            tilCount.error = message
-//        }
-//        viewModel.errorInputName.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_input_name)
-//            } else {
-//                null
-//            }
-//            tilName.error = message
-//        }
-//        // Если работа с экраном завершена, закрываем его
-//        viewModel.shouldCloseScreen.observe(this) {
-//            finish() // Завершение activity
-//        }
-//    }
-//
-//    private fun addTextChangeListeners() {
-//        // Скрывание ошибки при вводе текста
-//        etName.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputName()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//            }
-//        })
-//        etCount.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputCount()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//            }
-//        })
-//    }
-//
+
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
             throw java.lang.RuntimeException("Param screen mode is absent")
@@ -152,15 +65,7 @@ class ShopItemActivity : AppCompatActivity() {
             shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
     }
-//
-//    private fun initViews() {
-//        tilName = findViewById(R.id.til_name)
-//        tilCount = findViewById(R.id.til_count)
-//        etName = findViewById(R.id.et_name)
-//        etCount = findViewById(R.id.et_count)
-//        buttonSave = findViewById(R.id.save_button)
-//    }
-//
+
     /*
     * Для достижения инкапсуляции все константы делаем private
     * и создаем публичные методы для вызова intents
