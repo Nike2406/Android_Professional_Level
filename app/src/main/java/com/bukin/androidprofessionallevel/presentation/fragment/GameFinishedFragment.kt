@@ -46,10 +46,16 @@ class GameFinishedFragment : Fragment() {
                 retryGame()
             }
         })
+
+        binding.buttonRetry.setOnClickListener {
+            retryGame()
+        }
     }
 
     private fun parseArgs() {
-        gameResult = requireArguments().getSerializable(KEY_GAME_RESULT) as GameResult
+        requireArguments().getParcelable<GameResult>(KEY_GAME_RESULT)?.let {
+            gameResult = it
+        }
     }
 
     private fun retryGame() {
@@ -71,7 +77,15 @@ class GameFinishedFragment : Fragment() {
         fun newInstance(gameResult: GameResult): GameFinishedFragment {
             return GameFinishedFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(KEY_GAME_RESULT, gameResult)
+//                    putSerializable(KEY_GAME_RESULT, gameResult)
+                    /*
+                    * Serializable - довольно медленный метод, т.к. вся
+                    * реализация происходит под капотом
+                    * Parcelable - более предпочтительный метод, т.к.
+                    * реализация делается вручную, что ускоряет работу приложения
+                    * (Для его работы требуется переопределить методы объекта)
+                    * */
+                    putParcelable(KEY_GAME_RESULT, gameResult)
                 }
             }
         }
