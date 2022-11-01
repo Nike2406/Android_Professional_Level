@@ -15,17 +15,23 @@ import com.bukin.androidprofessionallevel.domain.entity.GameResult
 import com.bukin.androidprofessionallevel.domain.entity.GameSettings
 import com.bukin.androidprofessionallevel.domain.entity.Level
 import com.bukin.androidprofessionallevel.presentation.viewModel.GameViewModel
+import com.bukin.androidprofessionallevel.presentation.viewModel.GameViewModelFactory
 
 class GameFragment : Fragment() {
 
     private lateinit var level: Level
 
     // by lazy - при первом обращении к объекту, он будет проинициализирован
+    private val viewModelFactory by lazy {
+        GameViewModelFactory(
+            level,
+            requireActivity().application
+        )
+    }
     private val viewModel: GameViewModel by lazy {
         ViewModelProvider(
             owner = this,
-            factory = ViewModelProvider.AndroidViewModelFactory
-                .getInstance(requireActivity().application)
+            factory = viewModelFactory
         )[GameViewModel::class.java]
     }
 
@@ -72,7 +78,11 @@ class GameFragment : Fragment() {
 //        )[GameViewModel::class.java]
         observeViewModel()
         setClickListenersToOptions()
-        viewModel.startGame(level)
+        /*
+        viewModel = GameViewModel() - с ViewModel так делать нельзя, т.к.
+        она станет обычным объектом и будет уничтожена при повороте экрана
+        Используем ViewModelProvider()
+        */
     }
 
     private fun setClickListenersToOptions() {

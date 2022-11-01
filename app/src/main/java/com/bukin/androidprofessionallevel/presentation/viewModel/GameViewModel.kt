@@ -1,10 +1,12 @@
 package com.bukin.androidprofessionallevel.presentation.viewModel
 
 import android.app.Application
+import android.content.Context
 import android.os.CountDownTimer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.bukin.androidprofessionallevel.R
 import com.bukin.androidprofessionallevel.data.GameRepositoryImpl
 import com.bukin.androidprofessionallevel.domain.entity.GameResult
@@ -14,13 +16,21 @@ import com.bukin.androidprofessionallevel.domain.entity.Question
 import com.bukin.androidprofessionallevel.domain.useecase.GenerateQuestionUseCase
 import com.bukin.androidprofessionallevel.domain.useecase.GetGameSettingsUseCase
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel(
+    private val application: Application, // <- context: Context
+    private val level: Level
+) : ViewModel() {
+
+    /*
+    * ViewModel не должна хранить ссылку на activity или context, так как при
+    * повороте экрана activity уничтожается и сбрщик мусора не сможет
+    * ее уничтожить (произойдет утечка), поэтому в качестве контекста стоит
+    * передавать application (само приложение)
+    * */
 
     private lateinit var gameSettings: GameSettings
-    private lateinit var level: Level
 
     private val repository = GameRepositoryImpl
-    private val context = application
 
     private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
     private val getGameSettingsUseCase = GetGameSettingsUseCase(repository)
@@ -62,8 +72,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var countOfRightAnswers = 0
     private var countOfQuestions = 0
 
-    fun startGame(level: Level) {
-        getGameSettings(level)
+    init {
+        startGame()
+    }
+
+    private fun startGame() {
+        getGameSettings()
         startTimer()
         generateQuestion()
         updateProgress()
@@ -79,7 +93,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val percent = calculatePercentOfRightAnswers()
         _percentOfRightAnswers.value = percent
         _progressAnswers.value = String.format(
-            context.getString(R.string.progress_answers),
+            application.getString(R.string.progress_answers),
             countOfRightAnswers,
             gameSettings.minCountOfRightAnswers
         )
@@ -101,8 +115,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         countOfQuestions++
     }
 
-    private fun getGameSettings(level: Level) {
-        this.level = level
+    private fun getGameSettings() {
         this.gameSettings = getGameSettingsUseCase(level)
         _minPercent.value = gameSettings.minPercentOfRightAnswers
     }
