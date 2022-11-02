@@ -9,22 +9,19 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.bukin.androidprofessionallevel.R
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bukin.androidprofessionallevel.databinding.FragmentGameBinding
 import com.bukin.androidprofessionallevel.domain.entity.GameResult
-import com.bukin.androidprofessionallevel.domain.entity.GameSettings
-import com.bukin.androidprofessionallevel.domain.entity.Level
 import com.bukin.androidprofessionallevel.presentation.viewModel.GameViewModel
 import com.bukin.androidprofessionallevel.presentation.viewModel.GameViewModelFactory
 
 class GameFragment : Fragment() {
 
-    private lateinit var level: Level
-
-    // by lazy - при первом обращении к объекту, он будет проинициализирован
+    private val args by navArgs<GameFragmentArgs>()
     private val viewModelFactory by lazy {
         GameViewModelFactory(
-            level,
+            args.level,
             requireActivity().application
         )
     }
@@ -52,7 +49,6 @@ class GameFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        parseArgs()
     }
 
     override fun onCreateView(
@@ -61,13 +57,6 @@ class GameFragment : Fragment() {
     ): View {
         _binding = FragmentGameBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    private fun parseArgs() {
-        // requireArguments() - возвращает необходимые агрументы, когда фрагмент проинициализирован
-        requireArguments().getParcelable<Level>(KEY_LEVEL)?.let {
-            level = it
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -143,34 +132,13 @@ class GameFragment : Fragment() {
     }
 
     private fun launchGameFinished(gameResult: GameResult) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFinishedFragment.newInstance(gameResult))
-            .addToBackStack(null)
-            .commit()
+        findNavController().navigate(
+            GameFragmentDirections.actionGameFragmentToGameFinishedFragment(gameResult)
+        )
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-
-    companion object {
-
-        const val NAME = "GameFragment"
-        private const val KEY_LEVEL = "level"
-
-        /*
-        * Так Level - класс, то стандартные типы putExtra() не подходят,
-        * поэтому нужно использовать интерфейс Serializable, который
-        * должен реализовывать класс Level
-        * */
-        fun newInstance(level: Level): GameFragment {
-            return GameFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(KEY_LEVEL, level)
-                }
-            }
-        }
     }
 }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bukin.androidprofessionallevel.R
 import com.bukin.androidprofessionallevel.databinding.FragmentWelcomeBinding
 
@@ -29,16 +30,10 @@ class WelcomeFragment : Fragment() {
         }
     }
 
-    /*
-    * Можно сделать через интерфейсы, но в MaterialU
-    * принято, что фрагмент сам запускуает новый экран
-    * */
     private fun launchChooseLevelFragment() {
-        requireActivity().supportFragmentManager.beginTransaction()
-                // ChooseLevelFragment() лучше сделать фабричным методом через newInstance()
-            .replace(R.id.main_container, ChooseLevelFragment.newInstance())
-            .addToBackStack(ChooseLevelFragment.NAME)
-            .commit()
+        // Находим navController
+        // и указываем ему id следующей навигации (action) из xml
+        findNavController().navigate(R.id.action_welcomeFragment_to_chooseLevelFragment)
     }
 
     override fun onDestroy() {

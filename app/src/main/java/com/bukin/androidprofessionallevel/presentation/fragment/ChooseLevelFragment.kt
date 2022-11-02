@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.bukin.androidprofessionallevel.R
+import androidx.navigation.fragment.findNavController
 import com.bukin.androidprofessionallevel.databinding.FragmentChooseLevelBinding
 import com.bukin.androidprofessionallevel.domain.entity.Level
 
@@ -25,7 +25,7 @@ class ChooseLevelFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with (binding) {
+        with(binding) {
             binding.buttonLevelTest.setOnClickListener {
                 launchGameFragment(Level.TEST)
             }
@@ -42,24 +42,17 @@ class ChooseLevelFragment : Fragment() {
     }
 
     private fun launchGameFragment(level: Level) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFragment.newInstance(level))
-            .addToBackStack(GameFragment.NAME)
-            .commit()
+        /*
+        * ChooseLevelFragmentDirections - класс, в котором хранятся все напрвления,
+        * куда можно перейти из ChooseLevelFragment
+        * */
+        findNavController().navigate(
+            ChooseLevelFragmentDirections.actionChooseLevelFragmentToGameFragment(level)
+        )
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-
-    companion object {
-
-        const val NAME = "ChooseLevelFragment"
-
-        fun newInstance(): ChooseLevelFragment {
-            return ChooseLevelFragment()
-        }
     }
 }
