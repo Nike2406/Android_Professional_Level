@@ -1,10 +1,18 @@
 package com.bukin.androidprofessionallevel.presentation.adapter
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.bukin.androidprofessionallevel.R
 import com.bukin.androidprofessionallevel.domain.entity.GameResult
+
+interface onOptionClickListener {
+    fun onOptionClick(option: Int)
+}
 
 /*
     Работает через аннотации
@@ -60,4 +68,41 @@ private fun getSmileResId(winner: Boolean): Int = if (winner) {
     R.drawable.ic_smile
 } else {
     R.drawable.ic_sad
+}
+
+//@BindingAdapter("percentOfRightAnswers")
+//fun bindPercentOfRightAnswers(progressBar: ProgressBar, percent: Int) {
+//    progressBar.setProgress(percent, true)
+//}
+
+@BindingAdapter("enoughCount")
+fun bindEnoughCount(textView: TextView, isEnough: Boolean) {
+    textView.setTextColor(getColorByState(textView.context, isEnough))
+}
+
+@BindingAdapter("enoughPercent")
+fun bindEnoughPercent(progressBar: ProgressBar, isEnough: Boolean) {
+    val color = getColorByState(progressBar.context, isEnough)
+    progressBar.progressTintList = ColorStateList.valueOf(color)
+}
+
+private fun getColorByState(context: Context, goodState: Boolean): Int {
+    val colorResId = if (goodState) {
+        android.R.color.holo_green_light
+    } else {
+        android.R.color.holo_red_light
+    }
+    return ContextCompat.getColor(context, colorResId)
+}
+
+@BindingAdapter("numberAsText")
+fun bindNumberAsText(textView: TextView, number: Int) {
+    textView.text = number.toString()
+}
+
+@BindingAdapter("onOptionClickListener")
+fun bindOnOptionClickListener(textView: TextView, clickListener: onOptionClickListener) {
+    textView.setOnClickListener {
+        clickListener.onOptionClick(textView.text.toString().toInt())
+    }
 }
