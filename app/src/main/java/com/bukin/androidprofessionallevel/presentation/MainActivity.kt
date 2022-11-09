@@ -4,26 +4,24 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bukin.androidprofessionallevel.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.bukin.androidprofessionallevel.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
 
-    // Добавляем контейнер для горизонтальной ориентации
-    private var shopItemContainer: FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        shopItemContainer = findViewById(R.id.shop_item_container)
         setupRecyclerView()
         // создаем ViewModel
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -37,7 +35,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         * Для перехода между activity используется putExtra/getExtra
         * с использованием интентов
         * */
-        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+        val buttonAddItem = binding.buttonAddShopItem
         buttonAddItem.setOnClickListener {
             if (isOnePaneMode()) {
                 val intent = ShopItemActivity.newIntentAddItem(this)
@@ -48,15 +46,13 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         }
     }
 
-
-
     override fun onEditingFinished() {
         Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
         supportFragmentManager.popBackStack()
     }
 
     private fun isOnePaneMode(): Boolean {
-        return shopItemContainer == null
+        return binding.shopItemContainer == null
     }
 
     private fun launchFragment(fragment: Fragment) {
@@ -72,7 +68,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     // метод настройки RecyclerView
     private fun setupRecyclerView() {
-        val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
+        val rvShopList = binding.rvShopList
         shopListAdapter = ShopListAdapter()
         with(rvShopList) {
             adapter = shopListAdapter

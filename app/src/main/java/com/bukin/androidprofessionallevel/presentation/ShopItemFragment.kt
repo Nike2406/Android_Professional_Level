@@ -7,13 +7,10 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.bukin.androidprofessionallevel.R
+import com.bukin.androidprofessionallevel.databinding.FragmentShopItemBinding
 import com.bukin.androidprofessionallevel.domain.ShopItem
-import com.google.android.material.textfield.TextInputLayout
 
 /*
 * Передача параметров во фрагмент(так делать нельзя, см. ниже) будет работать только
@@ -27,11 +24,9 @@ class ShopItemFragment() : Fragment() {
     private lateinit var viewModel: ShopItemViewModel
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
-    private lateinit var tilName: TextInputLayout
-    private lateinit var tilCount: TextInputLayout
-    private lateinit var etName: EditText
-    private lateinit var etCount: EditText
-    private lateinit var buttonSave: Button
+    private var _binding: FragmentShopItemBinding? = null
+    private val binding: FragmentShopItemBinding
+        get() = _binding ?: throw RuntimeException("FragmentShopItemBinding == null")
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -41,13 +36,14 @@ class ShopItemFragment() : Fragment() {
         super.onCreate(savedInstanceState)
         parseParams()
     }
+
     /*
     * Метод прикрепления к activity
     * context - то activity, к которому прикрепляемся
     * */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnEditingFinishedListener){
+        if (context is OnEditingFinishedListener) {
             onEditingFinishedListener = context
         } else {
             // Показываем, что в MainActivity нужно реализовать интерфейс
@@ -62,14 +58,14 @@ class ShopItemFragment() : Fragment() {
         * */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         /*
         * Для правильной передачи параметров во фрагмент исп. arguments типа Bundle?
         * requiredArguments() - not nullable
         * Этот метод прилетает в activity.onCreate(bundle: Bundle)
         * */
-
-        return inflater.inflate(R.layout.fragment_shop_item, container, false)
+        _binding = FragmentShopItemBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     /*
@@ -78,7 +74,8 @@ class ShopItemFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        initViews(view)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         addTextChangeListeners()
         launchRightMode()
         observeViewModel()
@@ -88,25 +85,19 @@ class ShopItemFragment() : Fragment() {
     private fun launchEditMode() {
         // Получаем элмента по id
         viewModel.getShopItem(shopItemId)
-        // Подписываемся на элемент
-        viewModel.shopItem.observe(viewLifecycleOwner) {
-            // После загрузки элмента присваиваем значения
-            etName.setText(it.name)
-            etCount.setText(it.count.toString())
-        }
         // При клике на кнопку обновляем информацию
-        buttonSave.setOnClickListener {
+        binding.saveButton.setOnClickListener {
             viewModel.editShopItem(
-                etName.text?.toString(), etCount.text?.toString()
+                binding.etName.text?.toString(), binding.etCount.text?.toString()
             )
         }
     }
 
     private fun launchAddMode() {
         // Не вставляем значения в поля ввода
-        buttonSave.setOnClickListener {
+        binding.saveButton.setOnClickListener {
             viewModel.addShopItem(
-                etName.text?.toString(), etCount.text?.toString()
+                binding.etName.text?.toString(), binding.etCount.text?.toString()
             )
         }
     }
@@ -119,26 +110,6 @@ class ShopItemFragment() : Fragment() {
     }
 
     private fun observeViewModel() {
-        // Подписываемся на остальные объекты для отображения ошибок
-        // Т.к. жизненные циклы фрагмента и view отличаются,
-        // то нельзя передать LifecycleOwner типа this
-        // Передаем LifecycleOwner именно созданной view
-        viewModel.errorInputCount.observe(viewLifecycleOwner) {
-            val message = if (it) {
-                getString(R.string.error_input_count)
-            } else {
-                null
-            }
-            tilCount.error = message
-        }
-        viewModel.errorInputName.observe(viewLifecycleOwner) {
-            val message = if (it) {
-                getString(R.string.error_input_name)
-            } else {
-                null
-            }
-            tilName.error = message
-        }
         /*
         Если работа с экраном завершена, закрываем его
         У фргамента нет метода finish(), поэтому, в данном случае, нужно
@@ -158,7 +129,7 @@ class ShopItemFragment() : Fragment() {
 
     private fun addTextChangeListeners() {
         // Скрывание ошибки при вводе текста
-        etName.addTextChangedListener(object : TextWatcher {
+        binding.etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -169,7 +140,7 @@ class ShopItemFragment() : Fragment() {
             override fun afterTextChanged(p0: Editable?) {
             }
         })
-        etCount.addTextChangedListener(object : TextWatcher {
+        binding.etCount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -207,19 +178,6 @@ class ShopItemFragment() : Fragment() {
             }
             shopItemId = args.getInt(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
-    }
-
-    /*
-    * Во фрагменте нет метода findViewById() (tilName = findViewById(R.id.til_name) не отработает)
-    * Можно вызвать view из макета, и уже из него вызвать метод. Т.е. в конструктор
-    * передать view.
-    * */
-    private fun initViews(view: View) {
-        tilName = view.findViewById(R.id.til_name)
-        tilCount = view.findViewById(R.id.til_count)
-        etName = view.findViewById(R.id.et_name)
-        etCount = view.findViewById(R.id.et_count)
-        buttonSave = view.findViewById(R.id.save_button)
     }
 
     interface OnEditingFinishedListener {

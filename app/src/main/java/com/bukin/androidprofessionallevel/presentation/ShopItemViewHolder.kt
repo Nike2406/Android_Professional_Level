@@ -1,11 +1,11 @@
 package com.bukin.androidprofessionallevel.presentation
 
-import android.view.View
-import android.widget.TextView
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import com.bukin.androidprofessionallevel.R
 
-class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-    val tvName: TextView = view.findViewById(R.id.tv_name)
-    val tvCount: TextView = view.findViewById(R.id.tv_count)
-}
+/*
+* Т.к. все классы binding наследуются от ViewDataBinding,
+* так что посредстом полиморфизама можно исп. род-й класс
+* */
+class ShopItemViewHolder(val binding: ViewDataBinding) :
+    RecyclerView.ViewHolder(binding.root)
