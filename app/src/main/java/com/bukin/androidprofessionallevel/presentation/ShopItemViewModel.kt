@@ -1,17 +1,20 @@
 package com.bukin.androidprofessionallevel.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.bukin.androidprofessionallevel.data.ShopListRepositoryImpl
 import com.bukin.androidprofessionallevel.domain.ShopItem
 import com.bukin.androidprofessionallevel.domain.useCase.AddShopItemUseCase
 import com.bukin.androidprofessionallevel.domain.useCase.EditShopItemUseCase
 import com.bukin.androidprofessionallevel.domain.useCase.GetShopItemUseCase
+import kotlinx.coroutines.launch
 
-class ShopItemViewModel : ViewModel() {
+class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ShopListRepositoryImpl
+    private val repository = ShopListRepositoryImpl(application)
 
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
@@ -46,10 +49,11 @@ class ShopItemViewModel : ViewModel() {
         get() = _shouldCloseScreen
 
 
-
     fun getShopItem(shopItemId: Int) {
-        val item = getShopItemUseCase.getShopItem(shopItemId)
-        _shopItem.value = item
+        viewModelScope.launch {
+            val item = getShopItemUseCase.getShopItem(shopItemId)
+            _shopItem.postValue(item)
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -57,9 +61,11 @@ class ShopItemViewModel : ViewModel() {
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            finishWork()
+            viewModelScope.launch {
+                val shopItem = ShopItem(name, count, true)
+                addShopItemUseCase.addShopItem(shopItem)
+                finishWork()
+            }
         }
     }
 
@@ -69,9 +75,11 @@ class ShopItemViewModel : ViewModel() {
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
             _shopItem.value?.let {
-                val item = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(item)
-                finishWork()
+                viewModelScope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editShopItemUseCase.editShopItem(item)
+                    finishWork()
+                }
             }
         }
     }
@@ -111,14 +119,14 @@ class ShopItemViewModel : ViewModel() {
     * При повторном вводе пользователя, ошибку стоит убрать
     * */
     fun resetErrorInputName() {
-        _errorInputName.value =false
+        _errorInputName.value = false
     }
 
     fun resetErrorInputCount() {
-        _errorInputCount.value =false
+        _errorInputCount.value = false
     }
 
     private fun finishWork() {
-        _shouldCloseScreen.value = Unit
+        _shouldCloseScreen.postValue(Unit)
     }
 }
