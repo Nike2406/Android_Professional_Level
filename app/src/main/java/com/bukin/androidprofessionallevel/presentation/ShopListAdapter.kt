@@ -55,7 +55,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             }
             root.setOnClickListener {
                 onShopItemClickListener?.invoke(shopItem)
-                true
             }
             when (binding) {
                 is ItemShopDisabledBinding -> {
