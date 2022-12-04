@@ -1,4 +1,4 @@
 package com.bukin.androidprofessionallevel.example1
 
-class Processor {
+class Processor() {
 }

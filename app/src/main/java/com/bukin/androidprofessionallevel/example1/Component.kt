@@ -2,6 +2,8 @@ package com.bukin.androidprofessionallevel.example1
 
 /**
 * Component - отвечает за создание объектов зависимостей.
+ *
+ * Dagger под капотом создает всю эту иерархию зависимостей
 * */
 class Component {
 
@@ -20,7 +22,6 @@ class Component {
     // в качестве параметра метода нужно указать класс,
     // в который мы хотим вставить значение
     fun inject(activity: Activity) {
-        activity.computer = getComputer()
-        activity.keyboard = Keyboard()
+//        activity.keyboard = Keyboard()
     }
 }

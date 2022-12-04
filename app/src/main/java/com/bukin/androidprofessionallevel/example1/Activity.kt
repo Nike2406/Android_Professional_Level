@@ -1,5 +1,7 @@
 package com.bukin.androidprofessionallevel.example1
 
+import javax.inject.Inject
+
 /**
 * Если для работы класса А нужен класс В, то
  * класс А зависит от класса В
@@ -7,15 +9,22 @@ package com.bukin.androidprofessionallevel.example1
 
 class Activity {
 
-    // Вариант так себе, т.к. активити теперь зависит от компонента
-//    val computer: Computer = Component().getComputer()
-    // в таких случаях лучше использовать инъекции,
+    /**
+    * Инъекция в поле через создание элемента
+    * */
+//    val keyboard: Keyboard = DaggerNewComponent.create().getKeyboard()
+
+    // Если мы делаем зависимость в поле,
+    // ее также следует пометить аннотацией @Inject
+    // * переменная, в которую вставляется зависимость,
+    // должна быть public, иначе dagger не справится
+    //
+    // Передаем dagger, что нам нужен объект Keyboard
+    @Inject
     lateinit var computer: Computer
-    lateinit var keyboard: Keyboard
+
 
     init {
-        // При инициализации запрашиваются все зависимости
-        // в данные класс
-        Component().inject(this)
+        DaggerNewComponent.create().inject(this)
     }
 }
