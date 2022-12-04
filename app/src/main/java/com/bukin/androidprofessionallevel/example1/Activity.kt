@@ -7,13 +7,15 @@ package com.bukin.androidprofessionallevel.example1
 
 class Activity {
 
-    val monitor = Monitor()
-    val keyboard = Keyboard()
-    val mouse = Mouse()
-    val computerTower = ComputerTower(
-        Storage(),
-        Memory(),
-        Processor()
-    )
-    val computer = Computer(monitor, computerTower, keyboard, mouse)
+    // Вариант так себе, т.к. активити теперь зависит от компонента
+//    val computer: Computer = Component().getComputer()
+    // в таких случаях лучше использовать инъекции,
+    lateinit var computer: Computer
+    lateinit var keyboard: Keyboard
+
+    init {
+        // При инициализации запрашиваются все зависимости
+        // в данные класс
+        Component().inject(this)
+    }
 }
