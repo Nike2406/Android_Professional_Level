@@ -6,10 +6,12 @@ import com.bukin.androidprofessionallevel.R
 import javax.inject.Inject
 
 class ExampleApiService @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val timeInMillis: Long
 ) {
 
     fun method() {
-        Log.d("EXAMPLE", "ApiService, ${context.getString(R.string.app_name)}")
+        Log.d("EXAMPLE", "ApiService, ${context.getString(R.string.app_name)}" +
+                "$timeInMillis")
     }
 }

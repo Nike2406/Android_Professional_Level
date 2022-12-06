@@ -3,7 +3,6 @@ package com.bukin.androidprofessionallevel.example2.presentation
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bukin.androidprofessionallevel.R
-import com.bukin.androidprofessionallevel.example2.di.ContextModule
 import com.bukin.androidprofessionallevel.example2.di.DaggerApplicationComponent
 import javax.inject.Inject
 
@@ -14,7 +13,8 @@ class MainActivity : AppCompatActivity() {
 
     private val component by lazy {
         DaggerApplicationComponent.builder()
-            .contextModule(ContextModule(application))
+            .context(application)
+            .timeInMillis(System.currentTimeMillis())
             .build()
     }
 
