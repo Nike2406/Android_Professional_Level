@@ -17,9 +17,11 @@ interface DataModule {
      * реализцацию, то лучше использоваь @Binds. Для этого также нужно
      * сделать класс абстрактным
     * */
+    @ApplicationScope
     @Binds
     fun bindRemoteDataSource(impl: ExampleRemoteDataSourceImpl): ExampleRemoteDataSource
 
+    @ApplicationScope
     @Binds
     fun bindLocalDataSource(impl: ExampleLocalDataSourceImpl): ExampleLocalDataSource
 }
