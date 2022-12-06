@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import com.bukin.androidprofessionallevel.R
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
 * Т.к. бд является синглтоном, то в даггере можно ее так и пометить
@@ -22,7 +21,6 @@ import javax.inject.Singleton
  * @Singleton говорит даггеру, что пока живет компонент, помеченный
  * такой же аннотицией, экземпляр этого объекта всегда будет только один.
 * */
-@Singleton
 class ExampleDatabase @Inject constructor(
     private val context: Context,
     private val timeInMillis: Long

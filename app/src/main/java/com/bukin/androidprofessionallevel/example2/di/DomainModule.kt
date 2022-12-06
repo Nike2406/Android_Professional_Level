@@ -8,9 +8,7 @@ import dagger.Module
 @Module
 interface DomainModule {
 
-    // Т.к. dagger уже знает как создавать ExampleRepositoryImpl,
-    // мы можем передать реализацию, а даггер за нас подставит все
-    // значения
+    @ApplicationScope
     @Binds
     fun bindRepository(impl: ExampleRepositoryImpl): ExampleRepository
 }
