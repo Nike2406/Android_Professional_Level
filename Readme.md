@@ -4,5 +4,5 @@
 - Single Activity
 - MVVM
 - Jetpack Navigation
-
-![image](app/src/main/res/additional/GuessTheNumber.gif)
+  
+<img src="app/src/main/res/additional/GuessTheNumber.gif" width="1280" height="720">
